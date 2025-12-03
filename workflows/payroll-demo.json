@@ -1,0 +1,50 @@
+{
+  "id": "payroll-demo",
+  "name": "Payroll Processing (Sandbox)",
+  "description": "Complete payroll workflow using asm-sandbox engine",
+  "nodes": [
+    {
+      "id": "compile_payroll",
+      "type": "asm.compile",
+      "description": "Compile payroll calculation assembly",
+      "config": {
+        "sourceCode": ".TEXT\nmain:\n  MOV R0, #1000\n  MOV R1, #250\n  ADD R0, R0, R1\n  HLT"
+      }
+    },
+    {
+      "id": "execute_payroll",
+      "type": "asm.run",
+      "description": "Execute payroll calculation",
+      "config": {
+        "bytecode": "{{node.compile_payroll.artifacts.bytecode}}"
+      }
+    },
+    {
+      "id": "verify_result",
+      "type": "asm.debug",
+      "description": "Verify calculation result",
+      "config": {
+        "bytecode": "{{node.compile_payroll.artifacts.bytecode}}",
+        "breakpoints": []
+      }
+    },
+    {
+      "id": "submit_jcl",
+      "type": "zeroframe.send",
+      "description": "Submit JCL via 3270",
+      "config": {
+        "action": "ENTER",
+        "text": "SUBMIT PAYROLL.JCL"
+      }
+    },
+    {
+      "id": "verify_completion",
+      "type": "zeroframe.wait",
+      "description": "Wait for job completion",
+      "config": {
+        "expectedText": "JOB COMPLETE",
+        "timeout": 5000
+      }
+    }
+  ]
+}

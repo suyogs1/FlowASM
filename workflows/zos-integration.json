@@ -1,0 +1,39 @@
+{
+  "id": "zos-integration",
+  "name": "z/OS Integration Example",
+  "description": "Demonstrates real z/OS integration (requires credentials)",
+  "nodes": [
+    {
+      "id": "compile_program",
+      "type": "asm.compile",
+      "description": "Compile COBOL/ASM program",
+      "config": {
+        "sourceCode": ".TEXT\nmain:\n  MOV R0, #100\n  HLT"
+      }
+    },
+    {
+      "id": "submit_to_zos",
+      "type": "zos.submit",
+      "description": "Submit job to real z/OS",
+      "config": {
+        "jcl": "//MYJOB JOB (ACCT),'PROGRAMMER',CLASS=A,MSGCLASS=H\n//STEP1 EXEC PGM=IEFBR14\n"
+      }
+    },
+    {
+      "id": "fetch_smf",
+      "type": "zos.smf",
+      "description": "Fetch SMF records",
+      "config": {
+        "dataset": "SYS1.SMFDATA"
+      }
+    },
+    {
+      "id": "read_output",
+      "type": "zos.dataset",
+      "description": "Read output dataset",
+      "config": {
+        "dataset": "USER.OUTPUT"
+      }
+    }
+  ]
+}

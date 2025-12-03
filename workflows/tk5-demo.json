@@ -1,0 +1,40 @@
+{
+  "id": "tk5-demo",
+  "name": "TK5 Emulator Demo",
+  "description": "Demonstrates TK5/Hercules integration (requires TK5 running)",
+  "nodes": [
+    {
+      "id": "compile_code",
+      "type": "asm.compile",
+      "description": "Compile assembly code",
+      "config": {
+        "sourceCode": ".TEXT\nmain:\n  MOV R0, #42\n  MOV R1, #8\n  MUL R0, R0, R1\n  HLT"
+      }
+    },
+    {
+      "id": "ipl_system",
+      "type": "tk5.ipl",
+      "description": "IPL the TK5 system",
+      "config": {
+        "volume": "SYSRES"
+      }
+    },
+    {
+      "id": "submit_job",
+      "type": "tk5.submit",
+      "description": "Submit job to TK5",
+      "config": {
+        "jobName": "TESTJOB",
+        "jcl": "//TESTJOB JOB\n//STEP1 EXEC PGM=IEFBR14\n"
+      }
+    },
+    {
+      "id": "check_status",
+      "type": "tk5.status",
+      "description": "Check job status",
+      "config": {
+        "jobId": "{{node.submit_job.artifacts.jobId}}"
+      }
+    }
+  ]
+}

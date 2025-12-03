@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowASM - Visual Workflow Builder</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/editor/editor.main.min.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎃 FlowASM</h1>
+      <p>Visual Mainframe Workflow Builder</p>
+    </header>
+
+    <div class="main-content">
+      <!-- Left Sidebar: Workflows & Node Palette -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h2>Workflows</h2>
+          <div id="workflow-list"></div>
+          <button id="new-workflow" class="btn-secondary">+ New Workflow</button>
+        </div>
+        
+        <div class="sidebar-section">
+          <h2>Node Palette</h2>
+          <div class="node-palette">
+            <div class="palette-category">
+              <h3>ASM Sandbox</h3>
+              <div class="palette-node" draggable="true" data-node-type="asm.compile">
+                <span class="node-icon">📝</span>
+                <span class="node-label">Compile</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="asm.run">
+                <span class="node-icon">▶️</span>
+                <span class="node-label">Run</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="asm.debug">
+                <span class="node-icon">🐛</span>
+                <span class="node-label">Debug</span>
+              </div>
+            </div>
+            
+            <div class="palette-category">
+              <h3>TK5 Emulator</h3>
+              <div class="palette-node" draggable="true" data-node-type="tk5.ipl">
+                <span class="node-icon">🚀</span>
+                <span class="node-label">IPL</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="tk5.submit">
+                <span class="node-icon">📤</span>
+                <span class="node-label">Submit</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="tk5.status">
+                <span class="node-icon">📊</span>
+                <span class="node-label">Status</span>
+              </div>
+            </div>
+            
+            <div class="palette-category">
+              <h3>z/OS</h3>
+              <div class="palette-node" draggable="true" data-node-type="zos.submit">
+                <span class="node-icon">📤</span>
+                <span class="node-label">Submit</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="zos.smf">
+                <span class="node-icon">📈</span>
+                <span class="node-label">SMF</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="zos.dataset">
+                <span class="node-icon">📁</span>
+                <span class="node-label">Dataset</span>
+              </div>
+            </div>
+            
+            <div class="palette-category">
+              <h3>3270 Terminal</h3>
+              <div class="palette-node" draggable="true" data-node-type="zeroframe.send">
+                <span class="node-icon">⌨️</span>
+                <span class="node-label">Send</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="zeroframe.read">
+                <span class="node-icon">👁️</span>
+                <span class="node-label">Read</span>
+              </div>
+              <div class="palette-node" draggable="true" data-node-type="zeroframe.wait">
+                <span class="node-icon">⏱️</span>
+                <span class="node-label">Wait</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center: Canvas Area -->
+      <main class="canvas-area">
+        <div class="toolbar">
+          <button id="auto-layout" class="btn-secondary" title="Auto-arrange nodes">
+            <span>📐</span> Auto-Layout
+          </button>
+          <button id="run-workflow" class="btn-primary" title="Run workflow">
+            <span>▶️</span> Run
+          </button>
+          <button id="stop-workflow" class="btn-danger" style="display:none;" title="Stop execution">
+            <span>⏹️</span> Stop
+          </button>
+          <div class="toolbar-spacer"></div>
+          <button id="zoom-in" class="btn-icon" title="Zoom in">+</button>
+          <button id="zoom-reset" class="btn-icon" title="Reset zoom">100%</button>
+          <button id="zoom-out" class="btn-icon" title="Zoom out">-</button>
+          <div class="toolbar-spacer"></div>
+          <button id="export-workflow" class="btn-secondary" title="Export as JSON">
+            <span>💾</span> Export
+          </button>
+          <button id="import-workflow" class="btn-secondary" title="Import JSON">
+            <span>📂</span> Import
+          </button>
+          <button id="clear-canvas" class="btn-secondary" title="Clear canvas">
+            <span>🗑️</span> Clear
+          </button>
+        </div>
+
+        <div id="canvas-container" class="canvas-container">
+          <svg id="connections-layer" class="connections-layer"></svg>
+          <div id="canvas" class="canvas" tabindex="0">
+            <div class="canvas-placeholder">
+              Drag nodes from the palette to start building your workflow
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom: Execution Log -->
+        <div id="execution-panel" class="execution-panel collapsed">
+          <div class="panel-header">
+            <h3>Execution Log</h3>
+            <div class="panel-controls">
+              <button id="clear-log" class="btn-icon" title="Clear log">🗑️</button>
+              <button id="toggle-panel" class="btn-icon" title="Toggle panel">▼</button>
+            </div>
+          </div>
+          <div id="log-content" class="log-content"></div>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Node Inspector -->
+      <aside class="inspector">
+        <div class="inspector-tabs">
+          <button class="tab-button active" data-tab="inspector">Node Inspector</button>
+          <button class="tab-button" data-tab="editor">ASM Editor</button>
+        </div>
+        
+        <div id="inspector-tab" class="tab-content active">
+          <div id="inspector-content" class="inspector-content">
+            <p class="placeholder">Select a node to edit its properties</p>
+          </div>
+        </div>
+        
+        <div id="editor-tab" class="tab-content">
+          <div class="editor-header">
+            <div class="editor-info">
+              <span id="editor-node-info" class="editor-node-info">No node attached</span>
+            </div>
+            <div class="editor-controls">
+              <select id="template-select" class="editor-select">
+                <option value="">Load Template...</option>
+                <option value="hello">Hello World</option>
+                <option value="calculator">Simple Calculator</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="monaco-editor" class="monaco-editor-container"></div>
+          
+          <div class="editor-actions">
+            <div class="editor-actions-row">
+              <button id="validate-code" class="btn-secondary" title="Validate assembly code">
+                ✓ Validate
+              </button>
+              <button id="upload-asm" class="btn-secondary" title="Upload .asm file">
+                📂 Upload
+              </button>
+              <button id="download-asm" class="btn-secondary" title="Download as .asm">
+                💾 Download
+              </button>
+            </div>
+            <div class="editor-actions-row">
+              <button id="create-node-from-editor" class="btn-primary" title="Create new assemble node with this code">
+                ➕ Create Assemble Node
+              </button>
+            </div>
+            <div class="editor-actions-row">
+              <button id="load-node-code" class="btn-secondary" title="Load code from selected node" disabled>
+                📥 Load Node Code
+              </button>
+              <button id="save-to-node" class="btn-secondary" title="Save code to selected node" disabled>
+                💾 Save to Node
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Connection Drawing Overlay -->
+  <svg id="temp-connection" class="temp-connection" style="display:none;">
+    <path d="" stroke="#ff6b35" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#ff6b35" />
+      </marker>
+    </defs>
+  </svg>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
