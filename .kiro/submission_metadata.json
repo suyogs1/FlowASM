@@ -1,0 +1,34 @@
+{
+  "project_name": "FlowASM",
+  "short_description": "Visual n8n-style workflow builder for mainframe automation, combining assembly engines, 3270 terminals, and z/OS connectors into a unified Node.js platform.",
+  "long_description": "FlowASM is a modern visual workflow automation platform that brings mainframe development into the 21st century. Built entirely with Node.js, it unifies disparate mainframe systems—IPLLab assembly engine, ZeroFrame 3270 automation, TK5/Hercules emulators, and z/OS endpoints—into a single drag-and-drop interface. Users can visually design workflows that compile assembly code, execute programs, submit JCL jobs, and automate terminal interactions, all from a web browser. The platform features an integrated Monaco code editor, real-time execution monitoring, and a sandboxed assembly engine for instant testing without external dependencies. FlowASM demonstrates the Kiroween theme of 'combining separate systems into a unified whole' by seamlessly integrating multiple mainframe technologies that traditionally operate in isolation.",
+  "team_name": "Kiroween 2024",
+  "public_repo_url": "https://github.com/yourusername/FlowASM",
+  "contact": "Update with your contact information",
+  "tags": [
+    "mainframe",
+    "workflow-automation",
+    "n8n",
+    "assembly",
+    "z/OS",
+    "visual-programming",
+    "nodejs",
+    "3270-terminal",
+    "devops",
+    "integration"
+  ],
+  "made_for_kiroween": true,
+  "kiroween_theme": "Combining separate systems into a unified whole",
+  "technologies": [
+    "Node.js",
+    "Express",
+    "Monaco Editor",
+    "Vanilla JavaScript",
+    "HTML5",
+    "CSS3",
+    "SVG"
+  ],
+  "demo_duration_seconds": 60,
+  "requires_external_services": false,
+  "sandbox_mode": true
+}
